@@ -1,10 +1,4 @@
-package com.example.arambh
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -12,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.arambh.R
 
 @Composable
 fun ActivityBar() {
@@ -22,51 +18,53 @@ fun ActivityBar() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
+        // Smaller Add button on left
+        SmallAddButton()
 
-        // Activities
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Activities on right (wrap in rows)
         ActivityBox(
             modifier = Modifier.weight(1f)
         )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        AddButton()
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ActivityBox(modifier: Modifier = Modifier) {
     val itemList = listOf("Squat", "PushUp", "Plank", "Lunges")
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2), // 2 per row for bigger cards
-        contentPadding = PaddingValues(8.dp),
+    FlowRow(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-            .height(200.dp)
-            .background(Color.Black.copy(alpha = 0.05f), shape = MaterialTheme.shapes.medium)
-            .padding(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(itemList) { item ->
+        itemList.forEach { item ->
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp),
+                modifier = Modifier.wrapContentWidth(),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = item,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_camera_alt_24),
+                        contentDescription = "Camera",
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
@@ -75,12 +73,12 @@ fun ActivityBox(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AddButton() {
+fun SmallAddButton() {
     Card(
         modifier = Modifier
-            .size(70.dp)
+            .size(50.dp) // smaller size
             .padding(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF00C853)), // Green accent
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF00C853)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(
@@ -91,7 +89,7 @@ fun AddButton() {
                 Icons.Default.Add,
                 contentDescription = "Add Activity",
                 tint = Color.White,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
     }

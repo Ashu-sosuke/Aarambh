@@ -1,11 +1,14 @@
 package com.example.arambh
 
+import ActivityBar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
@@ -54,37 +57,26 @@ fun ProfileScreen() {
         },
         containerColor = Color.Black
     ) { padding ->
-        LazyColumn(
+
+        Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .padding(padding)
+                .padding(16.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+
         ) {
-            item {
-                UserDashScreen()
-            }
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    // your top UI (profile, health bar, etc.)
-                    // Call the StepCounterGrid
-                    StepCounterGrid(
-                        counters = listOf(
-                            1200 to 5000,
-                            3000 to 8000,
-                            4200 to 10000,
-                            800 to 6000
-                        )
-                    )
-                }
-            }
-            item {
-                ActivityBar()
-            }
+            UserDashScreen()
+            Spacer(modifier = Modifier.height(8.dp))
+            StepCounterGrid(
+                counters = listOf(
+                    1200 to 5000,
+                    1100 to 5000
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            ActivityBar()
         }
     }
 }
