@@ -33,7 +33,6 @@ fun ActivityBar() {
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Add button
         AddButton()
     }
 }
