@@ -19,8 +19,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ArambhTheme {
-                ProfileScreen()
+                Navigation()
             }
         }
     }
 }
+
