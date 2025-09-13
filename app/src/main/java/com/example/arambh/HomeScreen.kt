@@ -3,6 +3,7 @@ package com.example.arambh
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,6 +63,24 @@ fun ProfileScreen() {
         ) {
             item {
                 UserDashScreen()
+            }
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    // your top UI (profile, health bar, etc.)
+                    // Call the StepCounterGrid
+                    StepCounterGrid(
+                        counters = listOf(
+                            1200 to 5000,
+                            3000 to 8000,
+                            4200 to 10000,
+                            800 to 6000
+                        )
+                    )
+                }
             }
             item {
                 ActivityBar()

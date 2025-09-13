@@ -25,6 +25,7 @@ fun ActivityBar() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+
         // Activities
         ActivityBox(
             modifier = Modifier.weight(1f)
