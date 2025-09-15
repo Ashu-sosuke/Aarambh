@@ -1,6 +1,5 @@
 package com.example.arambh
 
-import ActivityBar
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -134,6 +133,10 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             UserDashScreen()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("User Activity", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
             StepCounterGrid(
                 counters = listOf(
@@ -142,7 +145,30 @@ fun HomeScreen(
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
-            ActivityBar()
+
+            Text("Activity Bar", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+
+            Spacer(modifier = Modifier.height(8.dp))
+            ActivityBar(
+                onNavigate = { activity ->
+                    when (activity) {
+                        "Squat" -> navController.navigate(Screen.SquatScreen.route)
+                        "PushUp" -> navController.navigate(Screen.PushUpScreen.route)
+                        "Plank" -> navController.navigate(Screen.PlankScreen.route)
+                        "Lunges" -> navController.navigate(Screen.LungesScreen.route)
+                        "Burpees" -> navController.navigate(Screen.BurpeesScreen.route)
+                        "Crunches" -> navController.navigate(Screen.CrunchesScreen.route)
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Sports Bar", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Spacer(modifier = Modifier.height(8.dp))
+            SportsBar{ sport ->
+                when (sport) {
+
+                }
+            }
         }
     }
     if (isDrawerOpen) {

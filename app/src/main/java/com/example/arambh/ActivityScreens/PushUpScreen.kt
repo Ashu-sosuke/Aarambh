@@ -112,7 +112,6 @@ fun PushUpScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 🔹 Camera Button
             Button(
                 onClick = { /* Open Camera */ },
                 modifier = Modifier

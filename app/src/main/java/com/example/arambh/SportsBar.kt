@@ -16,29 +16,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ActivityBar(onNavigate: (String) -> Unit) {
+fun SportsBar(onNavigate: (String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     var selectedActivities by remember { mutableStateOf(listOf<String>()) }
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(12.dp)
     ) {
-        SmallAddButton(onClick = { showDialog = true })
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LargeAddButton(onClick = { showDialog = true })
 
-        Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-        ActivityBox(
-            selectedActivities = selectedActivities,
-            onNavigate = onNavigate,
-            modifier = Modifier.weight(1f)
-        )
+            SportsBox(
+                selectedActivities = selectedActivities,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 
     if (showDialog) {
-        ActivityDialog(
+        SportDialog(
             initialSelection = selectedActivities,
             onDismiss = { showDialog = false },
             onActivitiesSelected = { activities ->
@@ -50,13 +52,42 @@ fun ActivityBar(onNavigate: (String) -> Unit) {
 }
 
 @Composable
-fun ActivityDialog(
+fun SportsBox(
+    selectedActivities: List<String>,
+    modifier: Modifier = Modifier
+) {
+    val sportImg = mapOf(
+        "PowerLifting" to R.drawable.download,
+        "Wrestling" to R.drawable.save__wrestling__savewrestling_for_olympic__lobbying_to_save_olympic_wrestling
+    )
+
+    val filtered = if (selectedActivities.isEmpty()) emptyList()
+    else selectedActivities.filter { it in sportImg.keys }
+
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = PaddingValues(horizontal = 8.dp)
+    ) {
+        items(filtered.size) { index ->
+            val sportName = filtered[index]
+            SportCard(
+                imageRes = sportImg[sportName] ?: R.drawable.download,
+                text = sportName
+            )
+        }
+    }
+}
+
+@Composable
+fun SportDialog(
     initialSelection: List<String>,
     onDismiss: () -> Unit,
     onActivitiesSelected: (List<String>) -> Unit
 ) {
-    val activities = listOf("Squat", "PushUp", "Plank", "Lunges", "Burpees", "Crunches")
-    var selected by remember { mutableStateOf(initialSelection.toSet()) } // ✅ immutable Set
+    val activities = listOf("PowerLifting", "Wrestling")
+    var selected by remember { mutableStateOf(initialSelection.toSet()) }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -73,7 +104,7 @@ fun ActivityDialog(
         text = {
             Column {
                 Text(
-                    text = "Choose Activities",
+                    text = "Choose Sports",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -84,9 +115,11 @@ fun ActivityDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                selected =
-                                    if (selected.contains(activity)) selected - activity
-                                    else selected + activity
+                                selected = if (selected.contains(activity)) {
+                                    selected - activity
+                                } else {
+                                    selected + activity
+                                }
                             }
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -94,8 +127,7 @@ fun ActivityDialog(
                         Checkbox(
                             checked = selected.contains(activity),
                             onCheckedChange = {
-                                selected =
-                                    if (it) selected + activity else selected - activity
+                                selected = if (it) selected + activity else selected - activity
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -108,56 +140,45 @@ fun ActivityDialog(
 }
 
 @Composable
-fun ActivityBox(
-    selectedActivities: List<String>,
-    onNavigate: (String) -> Unit,
+fun SportCard(
+    imageRes: Int,
+    text: String,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        contentPadding = PaddingValues(end = 16.dp)
+    Card(
+        modifier = modifier.size(width = 140.dp, height = 160.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1C1C1C)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        items(selectedActivities.size) { index ->
-            val item = selectedActivities[index]
-
-            Card(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .clickable { onNavigate(item) },
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_camera_alt_24),
-                        contentDescription = "Camera",
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = item,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = imageRes),
+                contentDescription = text,
+                modifier = Modifier.size(64.dp),
+                tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.size(12.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
+            )
         }
     }
 }
 
 @Composable
-fun SmallAddButton(onClick: () -> Unit) {
+fun LargeAddButton(onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(50.dp)
-            .padding(4.dp)
+            .size(100.dp)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color(0xFF00C853)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -170,7 +191,7 @@ fun SmallAddButton(onClick: () -> Unit) {
                 Icons.Default.Add,
                 contentDescription = "Add Activity",
                 tint = Color.White,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(36.dp)
             )
         }
     }
