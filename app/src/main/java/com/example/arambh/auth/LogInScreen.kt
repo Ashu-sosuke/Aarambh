@@ -48,7 +48,7 @@ fun LogInScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            "Welcome to Application",
+            "Aarambh",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             color = neonGreen
@@ -141,8 +141,9 @@ fun LogInScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextButton(onClick = { navController.navigate("signup") }) {
-            Text("Sign Up", color = neonGreen, fontWeight = FontWeight.Bold)
+        Row {
+            Text("Don't have an account?", fontSize = 20.sp, color = Color.White)
+            Text("SignUp", color = Color.Blue, fontSize = 20.sp)
         }
 
         Spacer(modifier = Modifier.height(32.dp))
