@@ -15,6 +15,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+val sportsData = mapOf(
+    "Powerlifting" to SportInfo(
+        route = Screen.ExPowerLiftingScreen.route,
+        imageRes = R.drawable.download
+    ),
+    "Wrestling" to SportInfo(
+        route = Screen.ExWrestlingScreen.route,
+        imageRes = R.drawable.save__wrestling__savewrestling_for_olympic__lobbying_to_save_olympic_wrestling
+    ),
+
+)
+
+data class SportInfo(
+    val route: String,
+    val imageRes: Int
+)
+
 @Composable
 fun SportsBar(onNavigate: (String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
@@ -25,15 +43,18 @@ fun SportsBar(onNavigate: (String) -> Unit) {
             .fillMaxWidth()
             .padding(12.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             LargeAddButton(onClick = { showDialog = true })
 
             Spacer(modifier = Modifier.width(16.dp))
 
             SportsBox(
                 selectedActivities = selectedActivities,
+                onNavigate = { sportName ->
+                    sportsData[sportName]?.let { sport ->
+                        onNavigate(sport.route)
+                    }
+                },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -51,18 +72,16 @@ fun SportsBar(onNavigate: (String) -> Unit) {
     }
 }
 
+// -----------------------------
+// 3. SportsBox
+// -----------------------------
 @Composable
 fun SportsBox(
     selectedActivities: List<String>,
+    onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sportImg = mapOf(
-        "PowerLifting" to R.drawable.download,
-        "Wrestling" to R.drawable.save__wrestling__savewrestling_for_olympic__lobbying_to_save_olympic_wrestling
-    )
-
-    val filtered = if (selectedActivities.isEmpty()) emptyList()
-    else selectedActivities.filter { it in sportImg.keys }
+    val filtered = selectedActivities.filter { it in sportsData.keys }
 
     LazyRow(
         modifier = modifier.fillMaxWidth(),
@@ -72,21 +91,27 @@ fun SportsBox(
     ) {
         items(filtered.size) { index ->
             val sportName = filtered[index]
-            SportCard(
-                imageRes = sportImg[sportName] ?: R.drawable.download,
-                text = sportName
-            )
+            val sportInfo = sportsData[sportName]
+            if (sportInfo != null) {
+                SportCard(
+                    imageRes = sportInfo.imageRes,
+                    text = sportName,
+                    onClick = { onNavigate(sportName) }
+                )
+            }
         }
     }
 }
 
+// -----------------------------
+// 4. SportDialog
+// -----------------------------
 @Composable
 fun SportDialog(
     initialSelection: List<String>,
     onDismiss: () -> Unit,
     onActivitiesSelected: (List<String>) -> Unit
 ) {
-    val activities = listOf("PowerLifting", "Wrestling")
     var selected by remember { mutableStateOf(initialSelection.toSet()) }
 
     AlertDialog(
@@ -110,7 +135,7 @@ fun SportDialog(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                activities.forEach { activity ->
+                sportsData.keys.forEach { activity ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -139,14 +164,20 @@ fun SportDialog(
     )
 }
 
+// -----------------------------
+// 5. SportCard
+// -----------------------------
 @Composable
 fun SportCard(
     imageRes: Int,
     text: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.size(width = 140.dp, height = 160.dp),
+        modifier = modifier
+            .size(width = 140.dp, height = 160.dp)
+            .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1C1C1C)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -174,6 +205,9 @@ fun SportCard(
     }
 }
 
+// -----------------------------
+// 6. Large Add Button
+// -----------------------------
 @Composable
 fun LargeAddButton(onClick: () -> Unit) {
     Card(

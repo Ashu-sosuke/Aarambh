@@ -114,7 +114,7 @@ fun SquatScreen(navController: NavController) {
 
             // 🔹 Camera Button
             Button(
-                onClick = { /* Open Camera */ },
+                onClick = { navController.navigate(Screen.SquatCameraScreen.route)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 30.dp, vertical = 12.dp),

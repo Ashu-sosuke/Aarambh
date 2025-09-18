@@ -164,10 +164,8 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Text("Sports Bar", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
-            SportsBar{ sport ->
-                when (sport) {
-
-                }
+            SportsBar { sportRoute ->
+                navController.navigate(sportRoute)
             }
         }
     }

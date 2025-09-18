@@ -41,6 +41,14 @@ android {
 
 dependencies {
 
+    implementation("androidx.camera:camera-core:1.3.3")
+    implementation("androidx.camera:camera-camera2:1.3.3")
+    implementation("androidx.camera:camera-lifecycle:1.3.3")
+    implementation("androidx.camera:camera-view:1.3.3")
+    implementation("com.google.mlkit:pose-detection-accurate:17.0.0")
+
+    implementation("com.google.mlkit:pose-detection:18.0.0-beta3")
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta3")
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
 

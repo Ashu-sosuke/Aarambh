@@ -1,37 +1,34 @@
 package com.example.arambh
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExploreScreen(navController: NavHostController){
+fun ExploreScreen(navController: NavController) {
+
+    val sportRoutes = mapOf(
+        "Powerlifting" to Screen.ExPowerLiftingScreen.route,
+    )
+
     val bottomItems = listOf(
         Screen.HomeScreen,
         Screen.ExploreScreen,
@@ -48,28 +45,35 @@ fun ExploreScreen(navController: NavHostController){
 
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
+    val sports = listOf(
+        "Wrestling", "Powerlifting",
+        "Judo", "Taekwondo",
+        "Swimming", "Running",
+        "High Jump",
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Aarambh") },
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Default.Person, contentDescription = "Menu")
-                    }
+                title = {
+                    Text(
+                        text = "Explore",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications")
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate(Screen.HomeScreen.route) }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    containerColor = Color.Black
                 )
             )
         },
@@ -104,16 +108,43 @@ fun ExploreScreen(navController: NavHostController){
                 }
             }
         },
-
         containerColor = Color.Black
-    ){paddingValues ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).background(Color.Black),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+    ) { padding ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Explore", color = Color.White)
+            items(sports) { sport ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clickable {
+                            sportRoutes[sport]?.let { route ->
+                                navController.navigate(route)
+                            }
+                        },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = sport,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
         }
     }
-
 }
