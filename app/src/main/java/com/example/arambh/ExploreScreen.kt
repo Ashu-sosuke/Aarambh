@@ -26,7 +26,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun ExploreScreen(navController: NavController) {
 
     val sportRoutes = mapOf(
-        "Powerlifting" to Screen.ExPowerLiftingScreen.route,
+        "Powerlifting" to Screen.PrVideoScreen.route,
+        "Wrestling" to Screen.WreasVideoScr.route,
+        "Judo" to Screen.JudoVideoScreen.route,
     )
 
     val bottomItems = listOf(

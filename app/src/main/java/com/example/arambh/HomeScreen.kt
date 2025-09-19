@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -70,7 +71,13 @@ fun HomeScreen(
                 title = { Text("Aarambh") },
                 navigationIcon = {
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Default.Person, contentDescription = "Menu")
+                        Icon(
+                            painter = painterResource(R.drawable.aarambh_sports_logo_bold_emblem_style),
+                            contentDescription = "Logo",
+                            modifier = Modifier.size(32.dp)
+                                .clip(CircleShape)
+                                .background(Color.White),
+                            tint = Color.Unspecified)
                     }
                 },
                 actions = {

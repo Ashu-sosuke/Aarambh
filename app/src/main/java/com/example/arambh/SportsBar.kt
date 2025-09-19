@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.sp
 
 val sportsData = mapOf(
     "Powerlifting" to SportInfo(
-        route = Screen.ExPowerLiftingScreen.route,
+        route = Screen.PowerLifting.route,
         imageRes = R.drawable.download
     ),
     "Wrestling" to SportInfo(
-        route = Screen.ExWrestlingScreen.route,
+        route = Screen.WreasVideoScr.route,
         imageRes = R.drawable.save__wrestling__savewrestling_for_olympic__lobbying_to_save_olympic_wrestling
     ),
 

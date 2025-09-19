@@ -38,8 +38,9 @@ fun Navigation() {
         composable(Screen.CrunchesScreen.route) { CrunchesScreen(navController) }
 
         // ---------------- Explore Category Screens ----------------
-        composable(Screen.ExPowerLiftingScreen.route) { ExPowerLiftingScreen(navController) }
-        composable(Screen.ExWrestlingScreen.route) { ExWrestlingScreen(navController) }
+        composable(Screen.PrVideoScreen.route) { PrVideoScreen() }
+        composable(Screen.WreasVideoScr.route) { WreasVideoScr() }
+        composable(Screen.JudoVideoScreen.route) { JudoVideoScreen() }
 
         // ---------------- Individual Sports Screens ----------------
         composable(Screen.PowerLifting.route) { PowerLiftingScreen() }

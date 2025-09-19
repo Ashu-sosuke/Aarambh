@@ -21,8 +21,9 @@ open class Screen(val route: String) {
     object BurpeesScreen : Screen("burpees_screen")
 
     // Explore Sports Screens
-    object ExPowerLiftingScreen : Screen("ex_powerlifting")
-    object ExWrestlingScreen : Screen("ex_wrestling")
+    object PrVideoScreen : Screen("pr-videoscreen")
+    object WreasVideoScr : Screen("WreasVideoScr")
+    object JudoVideoScreen : Screen("JudoVideoScr")
 
     // Individual Sports Screens
     object PowerLifting : Screen("powerlifting")

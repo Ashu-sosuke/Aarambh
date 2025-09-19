@@ -42,12 +42,11 @@ fun StepCounterUI(
             .aspectRatio(1f)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = size.minDimension * 0.15f // ✅ dynamic stroke (thicker arc)
+            val strokeWidth = size.minDimension * 0.15f
+            val inset = strokeWidth / 2f  // ✅ shift arcs inward
+
             val diameter = size.minDimension - strokeWidth
-            val topLeft = Offset(
-                (size.width - diameter) / 2,
-                (size.height - diameter) / 2
-            )
+            val topLeft = Offset(inset, inset) // ✅ inset on all sides
             val arcSize = Size(diameter, diameter)
 
             // Background arc
