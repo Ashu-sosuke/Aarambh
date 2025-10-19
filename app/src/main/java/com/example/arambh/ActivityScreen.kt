@@ -14,26 +14,62 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
-fun ActivityBar(onNavigate: (String) -> Unit) {
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedActivities by remember { mutableStateOf(listOf<String>()) }
+fun ActivityBar(
+    selectedActivities: List<String>,
+    onActivitiesChange: (List<String>) -> Unit,
+    onNavigate: (String) -> Unit
+) {
+    val db = FirebaseFirestore.getInstance()
+    val user = FirebaseAuth.getInstance().currentUser
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Row(
+    var showDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    // ✅ Load saved data from Firestore on launch
+    LaunchedEffect(Unit) {
+        user?.let {
+            val doc = db.collection("users").document(it.uid).get().await()
+            val saved = doc.get("activities") as? List<String> ?: emptyList()
+            onActivitiesChange(saved)
+        }
+        isLoading = false
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(16.dp)
     ) {
-        SmallAddButton(onClick = { showDialog = true })
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = Color(0xFF00FF88),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp)
+            )
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SmallAddButton(onClick = { showDialog = true })
+                Spacer(modifier = Modifier.width(12.dp))
+                ActivityBox(
+                    selectedActivities = selectedActivities,
+                    onNavigate = onNavigate,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
 
-        Spacer(modifier = Modifier.width(12.dp))
-
-        ActivityBox(
-            selectedActivities = selectedActivities,
-            onNavigate = onNavigate,
-            modifier = Modifier.weight(1f)
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }
 
@@ -42,8 +78,33 @@ fun ActivityBar(onNavigate: (String) -> Unit) {
             initialSelection = selectedActivities,
             onDismiss = { showDialog = false },
             onActivitiesSelected = { activities ->
-                selectedActivities = activities
+                onActivitiesChange(activities) // ✅ Notify parent
                 showDialog = false
+
+                user?.let { u ->
+                    val uid = u.uid
+                    db.collection("users").document(uid)
+                        .update("activities", activities)
+                        .addOnSuccessListener {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Activities updated successfully ✅")
+                            }
+                        }
+                        .addOnFailureListener {
+                            db.collection("users").document(uid)
+                                .set(mapOf("activities" to activities))
+                                .addOnSuccessListener {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Activities saved successfully ✅")
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Error: ${e.message}")
+                                    }
+                                }
+                        }
+                }
             }
         )
     }
@@ -56,10 +117,10 @@ fun ActivityDialog(
     onActivitiesSelected: (List<String>) -> Unit
 ) {
     val activities = listOf("Squat", "PushUp", "Plank", "Lunges", "Burpees", "Crunches")
-    var selected by remember { mutableStateOf(initialSelection.toSet()) } // ✅ immutable Set
+    var selected by remember { mutableStateOf(initialSelection.toSet()) }
 
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = { onActivitiesSelected(selected.toList()) }) {
                 Text("OK")
@@ -129,13 +190,12 @@ fun ActivityBox(
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_camera_alt_24),
-                        contentDescription = "Camera",
+                        contentDescription = "Activity Icon",
                         tint = Color.White,
                         modifier = Modifier.size(18.dp)
                     )

@@ -14,6 +14,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 
 val sportsData = mapOf(
@@ -35,28 +38,49 @@ data class SportInfo(
 
 @Composable
 fun SportsBar(onNavigate: (String) -> Unit) {
+    val db = FirebaseFirestore.getInstance()
+    val user = FirebaseAuth.getInstance().currentUser
     var showDialog by remember { mutableStateOf(false) }
     var selectedActivities by remember { mutableStateOf(listOf<String>()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        user?.let {
+            val doc = db.collection("users").document(it.uid).get().await()
+            val saved = doc.get("sports") as? List<String> ?: emptyList()
+            selectedActivities = saved
+        }
+        isLoading = false
+    }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            LargeAddButton(onClick = { showDialog = true })
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            SportsBox(
-                selectedActivities = selectedActivities,
-                onNavigate = { sportName ->
-                    sportsData[sportName]?.let { sport ->
-                        onNavigate(sport.route)
-                    }
-                },
-                modifier = Modifier.weight(1f)
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = Color(0xFF00FF88),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(24.dp)
             )
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                LargeAddButton(onClick = { showDialog = true })
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                SportsBox(
+                    selectedActivities = selectedActivities,
+                    onNavigate = { sportName ->
+                        sportsData[sportName]?.let { sport ->
+                            onNavigate(sport.route)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 
@@ -67,14 +91,23 @@ fun SportsBar(onNavigate: (String) -> Unit) {
             onActivitiesSelected = { activities ->
                 selectedActivities = activities
                 showDialog = false
+
+                // Save to Firestore
+                user?.let {u ->
+                    val uid = u.uid
+                    db.collection("users").document(uid)
+                        .update("sports", activities)
+                        .addOnFailureListener {
+                            db.collection("users").document(uid)
+                                .set(mapOf("sports" to activities))
+                        }
+                }
             }
         )
     }
 }
 
-// -----------------------------
-// 3. SportsBox
-// -----------------------------
+
 @Composable
 fun SportsBox(
     selectedActivities: List<String>,

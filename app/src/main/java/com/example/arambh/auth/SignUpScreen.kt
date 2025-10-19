@@ -1,8 +1,13 @@
 package com.example.arambh.auth
 
+import android.app.DatePickerDialog
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +26,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,26 +36,45 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.arambh.R
 import com.example.arambh.Screen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(
+    navController: NavController,
+    viewModel: AuthViewModel) {
+
+
+    val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var medicalApplicable by remember { mutableStateOf(false) }
+    var dob by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val neonGreen = Color(0xFF00FF88)
     val darkBg = Color(0xFF0A0A0A)
+
+    val calendar = Calendar.getInstance()
+    val datePicker = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            dob = "$dayOfMonth/${month + 1}/$year"
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(darkBg)
     ) {
-        // Background image
         Image(
             painter = painterResource(id = R.drawable.jordan_burroughs_and_andy_bisek__wrestling_photograph_by_sam_jones_),
             contentDescription = null,
@@ -57,14 +82,12 @@ fun SignUpScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize()
         )
 
-        // Dark overlay for readability
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.6f))
         )
 
-        // Scrollable content
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -82,7 +105,6 @@ fun SignUpScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Glassmorphic container
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,7 +118,6 @@ fun SignUpScreen(navController: NavController) {
                     modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Username
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -115,7 +136,6 @@ fun SignUpScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // First & Last name
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -148,7 +168,6 @@ fun SignUpScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Email
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -168,25 +187,6 @@ fun SignUpScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Medical Applicability
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = medicalApplicable,
-                            onCheckedChange = { medicalApplicable = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = neonGreen,
-                                uncheckedColor = Color.Gray
-                            )
-                        )
-                        Text("Medical Applicability", color = Color.White)
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Mobile number
                     OutlinedTextField(
                         value = mobileNumber,
                         onValueChange = { mobileNumber = it },
@@ -206,7 +206,25 @@ fun SignUpScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Password
+                    OutlinedTextField(
+                        value = dob,
+                        onValueChange = { },
+                        label = { Text("Date of Birth") },
+                        readOnly = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { datePicker.show() },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = neonGreen,
+                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+                            cursorColor = neonGreen
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -227,9 +245,26 @@ fun SignUpScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Neon Sign Up Button
                     Button(
-                        onClick = { navController.navigate(Screen.LogInScreen.route) },
+                        onClick = {
+                            viewModel.signUp(
+                                firstName = firstName,
+                                lastName = lastName,
+                                username = username,
+                                email = email,
+                                mobile = mobileNumber,
+                                dob = dob,
+                                password = password
+                            ) { success, error ->
+                                if (success) {
+                                    navController.navigate(Screen.LogInScreen.route) {
+                                        popUpTo(0)
+                                    }
+                                } else {
+                                    errorMessage = error
+                                }
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(55.dp)
@@ -259,6 +294,11 @@ fun SignUpScreen(navController: NavController) {
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("Already have an account?",
+                modifier = Modifier.padding(8.dp)
+                    .clickable{navController.navigate(Screen.LogInScreen.route)})
         }
     }
 }

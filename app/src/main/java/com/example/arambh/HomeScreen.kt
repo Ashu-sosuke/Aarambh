@@ -47,6 +47,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavHostController
 ) {
+    var selectedActivities by remember { mutableStateOf(listOf<String>()) } // ✅ Track selected items
+
     val bottomItems = listOf(
         Screen.HomeScreen,
         Screen.ExploreScreen,
@@ -143,20 +145,22 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // ✅ Show selected icons separately
             Text("User Activity", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
-            StepCounterGrid(
-                counters = listOf(
-                    1200 to 5000,
-                    1100 to 5000
-                )
-            )
+            ActivityCount(selectedActivities = selectedActivities)
+
             Spacer(modifier = Modifier.height(8.dp))
 
             Text("Activity Bar", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-
             Spacer(modifier = Modifier.height(8.dp))
+
+            // ✅ Pass callback to update selected list
             ActivityBar(
+                selectedActivities = selectedActivities,
+                onActivitiesChange = { updatedList ->
+                    selectedActivities = updatedList
+                },
                 onNavigate = { activity ->
                     when (activity) {
                         "Squat" -> navController.navigate(Screen.SquatScreen.route)
@@ -168,6 +172,8 @@ fun HomeScreen(
                     }
                 }
             )
+
+
             Spacer(modifier = Modifier.height(8.dp))
             Text("Sports Bar", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))

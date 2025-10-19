@@ -95,7 +95,6 @@ fun SquatScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 🔹 Calories Info
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Calories", color = NeonGreen, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(6.dp))
@@ -109,10 +108,8 @@ fun SquatScreen(navController: NavController) {
                     Text("525", color = Color.White, style = MaterialTheme.typography.bodyLarge)
                 }
             }
-
             Spacer(modifier = Modifier.weight(1f))
 
-            // 🔹 Camera Button
             Button(
                 onClick = { navController.navigate(Screen.SquatCameraScreen.route)},
                 modifier = Modifier

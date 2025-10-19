@@ -5,6 +5,7 @@ open class Screen(val route: String) {
     // Auth
     object LogInScreen : Screen("login")
     object SignUpScreen : Screen("signup")
+    object SplashScreen : Screen("splashscreen")
 
     // Core Screens
     object HomeScreen : Screen("home")

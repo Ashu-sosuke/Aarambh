@@ -1,33 +1,37 @@
 package com.example.arambh
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.arambh.ActivityScreens.*
 import com.example.arambh.CameraScreen.SquatCameraScreen
 import com.example.arambh.ExploreScreens.*
+import com.example.arambh.auth.AuthViewModel
 import com.example.arambh.auth.LogInScreen
 import com.example.arambh.auth.SignUpScreen
+import com.example.arambh.auth.SplashScreen
 import com.example.arambh.sports.*
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = Screen.SignUpScreen.route
+        startDestination = Screen.LogInScreen.route
     ) {
-        // ---------------- Auth ----------------
-        composable(Screen.SignUpScreen.route) { SignUpScreen(navController) }
-        composable(Screen.LogInScreen.route) { LogInScreen(navController) }
+        composable(Screen.SplashScreen.route) { SplashScreen(navController) }
+        composable(Screen.SignUpScreen.route) { SignUpScreen(navController,authViewModel ) }
+        composable(Screen.LogInScreen.route) { LogInScreen(navController, authViewModel) }
 
-        // ---------------- Core Screens ----------------
         composable(Screen.HomeScreen.route) { HomeScreen(navController) }
         composable(Screen.ExploreScreen.route) { ExploreScreen(navController) }
         composable(Screen.DashScreen.route) { DashScreen(navController) }
-        composable(Screen.ProfileScreen.route) { ProfileScreen(navController) }
+        composable(Screen.ProfileScreen.route) { ProfileScreen(navController, authViewModel) }
 
         // ---------------- Activity Screens ----------------
         composable(Screen.SquatScreen.route) { SquatScreen(navController) }
